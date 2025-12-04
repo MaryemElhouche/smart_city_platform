@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: Smart City Platform - Aggregated API
+  version: 1.0.0
+  description: |
+    API agrégée exposée par le `gateway`. Regroupe les endpoints Mobility et Emergency
+servers:
+  - url: "http://{gateway_host}:{gateway_port}"
+    description: Gateway local
+    variables:
+      gateway_host:
+        default: localhost
+      gateway_port:
+        default: "8080"
+tags:
+  - name: Mobility
+    description: Transports publics
+  - name: Emergency
+    description: Gestion des urgences
+paths:
+  /api/transports:
+    get:
+      tags: [Mobility]
+      summary: Lister les transports
+      responses:
+        '200':
+          description: Liste des transports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transport'
+    post:
+      tags: [Mobility]
+      summary: Créer un transport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transport'
+      responses:
+        '201':
+          description: Transport créé
+  /api/transports/{id}:
+    get:
+      tags: [Mobility]
+      summary: Récupérer un transport par id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Transport
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transport'
+  /api/emergencies:
+    get:
+      tags: [Emergency]
+      summary: Lister les urgences
+      responses:
+        '200':
+          description: Liste des urgences
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Emergency'
+    post:
+      tags: [Emergency]
+      summary: Créer une urgence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Emergency'
+      responses:
+        '201':
+          description: Urgence créée
+  /api/emergencies/{id}:
+    get:
+      tags: [Emergency]
+      summary: Récupérer une urgence par id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Urgence
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Emergency'
+components:
+  schemas:
+    Transport:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        lineNumber:
+          type: string
+        type:
+          type: string
+        origin:
+          type: string
+        destination:
+          type: string
+        departureTime:
+          type: string
+          format: date-time
+        arrivalTime:
+          type: string
+          format: date-time
+        status:
+          type: string
+        delayMinutes:
+          type: integer
+        availableSeats:
+          type: integer
+    Emergency:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        type:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+        status:
+          type: string
+        reportedAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          type: string
+          format: date-time
+        responderCount:
+          type: integer
+        remarks:
+          type: string

@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package com.city.mobility.grpc;
+
+option java_package = "com.city.mobility.grpc";
+option java_multiple_files = true;
+
+// Simple emergency service proto for generating Java gRPC stubs
+service EmergencyService {
+  // Get an emergency by id
+  rpc GetEmergency(GetEmergencyRequest) returns (EmergencyResponse);
+
+  // List emergencies with optional limit
+  rpc ListEmergencies(ListRequest) returns (ListResponse);
+
+  // Create a new emergency
+  rpc CreateEmergency(CreateEmergencyRequest) returns (EmergencyResponse);
+}
+
+message GetEmergencyRequest {
+  int64 id = 1;
+}
+
+message ListRequest {
+  int32 limit = 1;
+}
+
+message CreateEmergencyRequest {
+  string type = 1;
+  string location = 2;
+  string description = 3;
+  string severity = 4;
+  string status = 5;
+  int32 responder_count = 6;
+}
+
+message EmergencyResponse {
+  int64 id = 1;
+  string type = 2;
+  string location = 3;
+  string description = 4;
+  string severity = 5;
+  string status = 6;
+  int32 responder_count = 7;
+}
+
+message ListResponse {
+  repeated EmergencyResponse emergencies = 1;
+}

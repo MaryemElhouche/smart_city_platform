@@ -1,0 +1,11 @@
+{
+  "java.project.sourcePaths": [
+    "services/mobility/src/main/java",
+    "services/air-quality-soap/src/main/java",
+    "services/data-graphql/src/main/java",
+    "services/emergency-grpc/src/main/java",
+    "gateway/src/main/java"
+  ],
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic"
+}

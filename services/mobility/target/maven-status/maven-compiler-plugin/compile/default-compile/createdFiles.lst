@@ -1,0 +1,7 @@
+com\city\mobility\repository\TransportRepository.class
+com\city\mobility\entity\Transport.class
+com\city\mobility\config\DataInitializer.class
+com\city\mobility\dto\TransportDTO.class
+com\city\mobility\controller\TransportController.class
+com\city\mobility\service\TransportService.class
+com\city\mobility\MobilityRestApplication.class
