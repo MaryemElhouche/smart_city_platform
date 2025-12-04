@@ -1,3 +1,10 @@
 # Ignorer tous les dossiers target
 **/target/
 *.jar
+*.log
+
+# IDE et fichiers système
+.vscode/
+.idea/
+*.iml
+.DS_Store
