@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://city.com/airquality"
+           xmlns:tns="http://city.com/airquality"
+           elementFormDefault="qualified">
+
+    <xs:simpleType name="AQIType">
+        <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="500"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="PollutantType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PM2.5"/>
+            <xs:enumeration value="PM10"/>
+            <xs:enumeration value="NO2"/>
+            <xs:enumeration value="CO2"/>
+            <xs:enumeration value="O3"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="StatusType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="GOOD"/>
+            <xs:enumeration value="MODERATE"/>
+            <xs:enumeration value="UNHEALTHY_FOR_SENSITIVE_GROUPS"/>
+            <xs:enumeration value="UNHEALTHY"/>
+            <xs:enumeration value="VERY_UNHEALTHY"/>
+            <xs:enumeration value="HAZARDOUS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="AirQualityData">
+        <xs:sequence>
+            <xs:element name="zone" type="xs:string"/>
+            <xs:element name="aqi" type="tns:AQIType"/>
+            <xs:element name="pm25" type="xs:double"/>
+            <xs:element name="pm10" type="xs:double"/>
+            <xs:element name="no2" type="xs:double"/>
+            <xs:element name="co2" type="xs:double"/>
+            <xs:element name="o3" type="xs:double"/>
+            <xs:element name="status" type="tns:StatusType"/>
+            <xs:element name="measurementTime" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="getAirQualityByZoneRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="zone" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getAirQualityByZoneResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="airQualityData" type="tns:AirQualityData" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="compareZonesRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="zone1" type="xs:string"/>
+                <xs:element name="zone2" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="compareZonesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="comparison" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getPollutantDetailsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="zone" type="xs:string"/>
+                <xs:element name="pollutant" type="tns:PollutantType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getPollutantDetailsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="zone" type="xs:string"/>
+                <xs:element name="pollutant" type="tns:PollutantType"/>
+                <xs:element name="value" type="xs:double"/>
+                <xs:element name="unit" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getHistoricalDataRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="zone" type="xs:string"/>
+                <xs:element name="startDate" type="xs:dateTime"/>
+                <xs:element name="endDate" type="xs:dateTime"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getHistoricalDataResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="airQualityData" type="tns:AirQualityData" maxOccurs="unbounded" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

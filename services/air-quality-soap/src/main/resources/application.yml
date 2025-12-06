@@ -1,2 +1,32 @@
 server:
-  port: 0
+  port: 8083
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: air-quality-soap-service
+
+  data:
+    mongodb:
+      # Override with environment variable MONGODB_URI in production
+      uri: ${MONGODB_URI:mongodb://localhost:27017/airqualitydb}
+
+  profiles:
+    active: default
+
+logging:
+  level:
+    root: INFO
+    com.city.mobility: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
