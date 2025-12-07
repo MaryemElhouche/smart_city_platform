@@ -1,44 +1,43 @@
 package com.city.mobility.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 import java.time.LocalDateTime;
-
+import lombok.*;
+@Builder
 @Entity
 @Table(name = "transports")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transport {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(nullable = false)
-    private String lineNumber;
-    
-    @Column(nullable = false)
-    private String type; // BUS, METRO, TRAIN
-    
-    @Column(nullable = false)
+
+    @Column(nullable = true)
     private String origin;
-    
-    @Column(nullable = false)
+
+    @Column(nullable = true)
     private String destination;
-    
-    @Column(nullable = false)
+
+    @Column(nullable = true)
     private LocalDateTime departureTime;
-    
-    @Column(nullable = false)
+
+    @Column(nullable = true)
     private LocalDateTime arrivalTime;
-    
-    private String status; // ON_TIME, DELAYED, CANCELLED
-    
+
+    private String status; // ON_TIME / DELAYED / CANCELLED
     private Integer delayMinutes;
-    
     private Integer availableSeats;
+
+    @ManyToOne
+    @JoinColumn(name = "line_id")
+    private TransportLine transportLine;
+
+    @ManyToOne
+    @JoinColumn(name = "vehicle_id")
+    private Vehicle vehicle;
 }

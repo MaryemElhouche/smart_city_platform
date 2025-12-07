@@ -1,0 +1,14 @@
+type SensorData {
+    id: ID!
+    type: String!
+    value: Float!
+    timestamp: String!
+}
+
+type Query {
+    getAllSensorData: [SensorData!]!
+}
+
+type Mutation {
+    addSensorData(type: String!, value: Float!, timestamp: String!): SensorData!
+}
