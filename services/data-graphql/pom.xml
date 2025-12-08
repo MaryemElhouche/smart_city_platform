@@ -32,10 +32,10 @@
         <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
 
-    <!-- Spring Data Neo4j -->
+    <!-- Spring Data MongoDB -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-neo4j</artifactId>
+        <artifactId>spring-boot-starter-data-mongodb</artifactId>
     </dependency>
 
     <!-- Spring GraphQL Starter -->
@@ -44,11 +44,17 @@
         <artifactId>spring-boot-starter-graphql</artifactId>
     </dependency>
 
-    <!-- Neo4j Driver -->
+    <!-- Lombok -->
     <dependency>
-        <groupId>org.neo4j.driver</groupId>
-        <artifactId>neo4j-java-driver</artifactId>
-        <version>5.14.0</version>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+
+    <!-- Thymeleaf for HTML templates -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-thymeleaf</artifactId>
     </dependency>
 
     <!-- Test -->
@@ -59,10 +65,10 @@
     </dependency>
     
     <dependency>
-    <groupId>com.graphql-java-kickstart</groupId>
-    <artifactId>graphiql-spring-boot-starter</artifactId>
-    <version>11.1.0</version>
-</dependency>
+        <groupId>org.springframework.graphql</groupId>
+        <artifactId>spring-graphql-test</artifactId>
+        <scope>test</scope>
+    </dependency>
 
 </dependencies>
 

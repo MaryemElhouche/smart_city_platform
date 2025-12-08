@@ -1,0 +1,21 @@
+target/
+.mvn/
+*.class
+*.log
+*.jar
+!target/*.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore

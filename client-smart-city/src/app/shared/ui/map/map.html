@@ -1,0 +1,58 @@
+<div class="map-container" #mapContainer>
+      <div class="map-controls">
+        <button class="map-btn" (click)="zoomIn()">
+          <span class="material-icons">add</span>
+        </button>
+        <button class="map-btn" (click)="zoomOut()">
+          <span class="material-icons">remove</span>
+        </button>
+      </div>
+      
+      <svg class="map-svg" [attr.viewBox]="zoomedViewBox" [attr.width]="width" [attr.height]="height">
+        <!-- Background -->
+        <rect x="0" y="0" [attr.width]="width" [attr.height]="height" fill="#E8F4F8"/>
+        
+        <!-- Grid lines -->
+        <g stroke="#D0E8F0" stroke-width="1">
+          @for (i of gridLines; track i) {
+            <line 
+              [attr.x1]="i * 50" y1="0" 
+              [attr.x2]="i * 50" [attr.y2]="height"/>
+          }
+          @for (i of gridLines; track i) {
+            <line 
+              x1="0" [attr.y1]="i * 50" 
+              [attr.x2]="width" [attr.y2]="i * 50"/>
+          }
+        </g>
+        
+        <!-- Markers -->
+        @for (marker of markers; track marker.title) {
+        <g>
+          <circle 
+            [attr.cx]="getX(marker.position[1])" 
+            [attr.cy]="getY(marker.position[0])"
+            r="8"
+            [attr.fill]="marker.color || '#21618C'"
+            [attr.stroke]="'white'"
+            [attr.stroke-width]="2"
+            style="cursor: pointer;"
+            (click)="onMarkerClick(marker)"
+            (keydown.enter)="onMarkerClick(marker)"
+            tabindex="0">
+            <title>{{ marker.title }}</title>
+          </circle>
+          
+          <text 
+            [attr.x]="getX(marker.position[1])" 
+            [attr.y]="getY(marker.position[0]) + 25"
+            text-anchor="middle"
+            font-size="11"
+            [attr.fill]="marker.color || '#21618C'"
+            font-weight="600">
+            {{ marker.title }}
+          </text>
+        </g>
+        }
+      </svg>
+    </div>

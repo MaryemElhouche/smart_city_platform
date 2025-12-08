@@ -2,15 +2,28 @@ server:
   port: 8084
 
 spring:
-  neo4j:
-    uri: ${NEO4J_URI}
-    authentication:
-      username: ${NEO4J_USERNAME}
-      password: ${NEO4J_PASSWORD}
-    database: ${NEO4J_DATABASE}
+  application:
+    name: data-graphql-service
+  data:
+    mongodb:
+      uri: mongodb+srv://eyaboudidah_db_user:graphqluser@graphqldb.eguz5jr.mongodb.net/
+      database: smart_city
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphiql
+    schema:
+      printer:
+        enabled: true
+    cors:
+      allowed-origins: "*"
+      allowed-methods: GET,POST
+      allowed-headers: "*"
 
 management:
   endpoints:
     web:
       exposure:
         include: health, info
+
+

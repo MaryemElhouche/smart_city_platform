@@ -1,0 +1,8 @@
+<button 
+      [class]="'btn btn-' + variant + ' btn-' + size"
+      [disabled]="disabled || loading"
+      [type]="type">
+      <span class="material-icons" *ngIf="icon && !loading">{{ icon }}</span>
+      <span class="material-icons spinner" *ngIf="loading">refresh</span>
+      <span *ngIf="!iconOnly"><ng-content></ng-content></span>
+    </button>

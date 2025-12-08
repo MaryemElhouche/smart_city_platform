@@ -1,0 +1,92 @@
+<div class="dashboard fade-in">
+      <div class="dashboard-header">
+        <h1>Smart City Dashboard</h1>
+        <p class="subtitle">Real-time monitoring and analytics</p>
+      </div>
+      
+      <div class="stats-grid">
+        <app-card class="stat-card" [loading]="loading()">
+          <div class="stat-content">
+            <div class="stat-icon air">
+              <span class="material-icons">air</span>
+            </div>
+            <div class="stat-info">
+              <h3 class="stat-value">{{ airQualityStatus() }}</h3>
+              <p class="stat-label">Air Quality Status</p>
+            </div>
+          </div>
+        </app-card>
+        
+        <app-card class="stat-card" [loading]="loading()">
+          <div class="stat-content">
+            <div class="stat-icon mobility">
+              <span class="material-icons">directions_bus</span>
+            </div>
+            <div class="stat-info">
+              <h3 class="stat-value">{{ vehiclesOnline() }}</h3>
+              <p class="stat-label">Vehicles Online</p>
+            </div>
+          </div>
+        </app-card>
+        
+        <app-card class="stat-card" [loading]="loading()">
+          <div class="stat-content">
+            <div class="stat-icon emergency">
+              <span class="material-icons">emergency</span>
+            </div>
+            <div class="stat-info">
+              <h3 class="stat-value">{{ activeEmergencies() }}</h3>
+              <p class="stat-label">Active Emergencies</p>
+            </div>
+          </div>
+        </app-card>
+        
+        <app-card class="stat-card" [loading]="loading()">
+          <div class="stat-content">
+            <div class="stat-icon data">
+              <span class="material-icons">storage</span>
+            </div>
+            <div class="stat-info">
+              <h3 class="stat-value">{{ queryCount() }}</h3>
+              <p class="stat-label">GraphQL Queries</p>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      
+      <div class="dashboard-grid">
+        <app-card title="City Overview Map" class="map-card">
+          <app-map [markers]="mapMarkers()"></app-map>
+        </app-card>
+        
+        <app-card title="Air Quality Index - 24h Trend" class="chart-card">
+          <app-line-chart 
+            [data]="aqiChartData()" 
+            [color]="'#21618C'">
+          </app-line-chart>
+        </app-card>
+      </div>
+      
+      <div class="quick-actions">
+        <app-card title="Quick Actions">
+          <div class="actions-grid">
+            <a routerLink="/air-quality" class="action-btn">
+              <span class="material-icons">air</span>
+              <span>View Sensors</span>
+            </a>
+            <a routerLink="/mobility" class="action-btn">
+              <span class="material-icons">map</span>
+              <span>Track Vehicles</span>
+            </a>
+            <a routerLink="/emergency/report" class="action-btn">
+              <span class="material-icons">report</span>
+              <span>Report Emergency</span>
+            </a>
+            <a routerLink="/data-explorer" class="action-btn">
+              <span class="material-icons">code</span>
+              <span>Run Query</span>
+            </a>
+          </div>
+        </app-card>
+      </div>
+    </div>
