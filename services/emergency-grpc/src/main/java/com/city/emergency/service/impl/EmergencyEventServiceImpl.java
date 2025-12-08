@@ -26,7 +26,7 @@ public class EmergencyEventServiceImpl implements EmergencyEventService {
                 .description(dto.getDescription())
                 .severity(dto.getSeverity())
                 .status("REPORTED")
-                .location(mapper.toLocation(dto.getLocation()))
+                .location(mapper.toLocationEntity(dto.getLocation()))
                 .build();
 
         eventRepo.save(event);

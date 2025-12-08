@@ -2,13 +2,16 @@
 FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /app
 
-# Copier pom et sources
-COPY pom.xml .
-COPY src ./src
-
-# Installer Maven et builder le projet
+# Installer Maven
 RUN apk add --no-cache maven
-RUN mvn clean package -DskipTests
+
+# Préparer le cache des dépendances
+COPY pom.xml .
+RUN mvn -q -e -DskipTests -DremoteRepositories=all dependency:go-offline --no-transfer-progress
+
+# Copier les sources et builder
+COPY src ./src
+RUN mvn -q clean package -DskipTests --no-transfer-progress
 
 # Étape 2 : Runtime
 FROM eclipse-temurin:17-jre-alpine

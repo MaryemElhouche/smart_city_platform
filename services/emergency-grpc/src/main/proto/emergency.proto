@@ -1,49 +1,152 @@
 syntax = "proto3";
 
-package com.city.mobility.grpc;
+package emergency;
 
-option java_package = "com.city.mobility.grpc";
+option java_package = "com.city.emergency.grpc";
 option java_multiple_files = true;
+option java_outer_classname = "EmergencyProto";
 
-// Simple emergency service proto for generating Java gRPC stubs
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// ---------------------------
+//        SERVICE GÉNÉRAL
+// ---------------------------
 service EmergencyService {
-  // Get an emergency by id
-  rpc GetEmergency(GetEmergencyRequest) returns (EmergencyResponse);
+  // ---- EmergencyEvent ----
+  rpc CreateEmergencyEvent(CreateEmergencyEventRequest) returns (EmergencyEventResponse);
+  rpc GetEmergencyEventById(GetByIdRequest) returns (EmergencyEventResponse);
+  rpc ListEmergencyEvents(google.protobuf.Empty) returns (ListEmergencyEventResponse);
 
-  // List emergencies with optional limit
-  rpc ListEmergencies(ListRequest) returns (ListResponse);
+  // ---- EmergencyUnit ----
+  rpc CreateEmergencyUnit(CreateEmergencyUnitRequest) returns (EmergencyUnitResponse);
+  rpc GetEmergencyUnitById(GetByIdRequest) returns (EmergencyUnitResponse);
+  rpc ListEmergencyUnits(google.protobuf.Empty) returns (ListEmergencyUnitResponse);
 
-  // Create a new emergency
-  rpc CreateEmergency(CreateEmergencyRequest) returns (EmergencyResponse);
+  // ---- Resource ----
+  rpc CreateResource(CreateResourceRequest) returns (ResourceResponse);
+  rpc ListResources(google.protobuf.Empty) returns (ListResourceResponse);
+
+  // ---- IncidentLog ----
+  rpc CreateIncidentLog(CreateIncidentLogRequest) returns (IncidentLogResponse);
+  rpc ListIncidentLogs(google.protobuf.Empty) returns (ListIncidentLogResponse);
 }
 
-message GetEmergencyRequest {
+// ---------------------------
+//         LOCATION
+// ---------------------------
+message LocationMessage {
   int64 id = 1;
+  double latitude = 2;
+  double longitude = 3;
+  string address = 4;
 }
 
-message ListRequest {
-  int32 limit = 1;
+// ---------------------------
+//       EMERGENCY EVENT
+// ---------------------------
+message CreateEmergencyEventRequest {
+  string title = 1;
+  string description = 2;
+  string severity = 3;
+  string status = 4;
+
+  LocationMessage location = 5;
+  int64 assignedUnitId = 6;
 }
 
-message CreateEmergencyRequest {
-  string type = 1;
-  string location = 2;
+message EmergencyEventResponse {
+  int64 id = 1;
+  string title = 2;
   string description = 3;
   string severity = 4;
   string status = 5;
-  int32 responder_count = 6;
+
+  LocationMessage location = 6;
+  int64 assignedUnitId = 7;
 }
 
-message EmergencyResponse {
-  int64 id = 1;
+message ListEmergencyEventResponse {
+  repeated EmergencyEventResponse events = 1;
+}
+
+// ---------------------------
+//       EMERGENCY UNIT
+// ---------------------------
+message CreateEmergencyUnitRequest {
+  string name = 1;
   string type = 2;
-  string location = 3;
-  string description = 4;
-  string severity = 5;
-  string status = 6;
-  int32 responder_count = 7;
+  string status = 3;
+
+  int64 locationId = 4; // WHERE the unit is located
 }
 
-message ListResponse {
-  repeated EmergencyResponse emergencies = 1;
+message EmergencyUnitResponse {
+  int64 id = 1;
+  string name = 2;
+  string type = 3;
+  string status = 4;
+
+  LocationMessage currentLocation = 5;
+  repeated int64 resourceIds = 6;
+  repeated int64 incidentLogIds = 7;
+}
+
+message ListEmergencyUnitResponse {
+  repeated EmergencyUnitResponse units = 1;
+}
+
+// ---------------------------
+//         RESOURCE
+// ---------------------------
+message CreateResourceRequest {
+  string name = 1;
+  string type = 2;
+  string status = 3;
+
+  int64 assignedUnitId = 4;
+  int64 assignedEventId = 5;
+}
+
+message ResourceResponse {
+  int64 id = 1;
+  string name = 2;
+  string type = 3;
+  string status = 4;
+
+  int64 assignedUnitId = 5;
+  int64 assignedEventId = 6;
+}
+
+message ListResourceResponse {
+  repeated ResourceResponse resources = 1;
+}
+
+// ---------------------------
+//       INCIDENT LOG
+// ---------------------------
+message CreateIncidentLogRequest {
+  string message = 1;
+  int64 eventId = 2;
+  int64 unitId = 3;
+  int64 resourceId = 4;
+}
+
+message IncidentLogResponse {
+  int64 id = 1;
+  string message = 2;
+  google.protobuf.Timestamp timestamp = 3;
+
+  int64 eventId = 4;
+  int64 unitId = 5;
+  int64 resourceId = 6;
+}
+
+message ListIncidentLogResponse {
+  repeated IncidentLogResponse incidents = 1;
+}
+
+// ---------------------------
+message GetByIdRequest {
+  int64 id = 1;
 }
