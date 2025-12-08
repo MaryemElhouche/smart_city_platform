@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphiQL - Smart City Platform</title>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #graphiql {
+            height: 100vh;
+        }
+        .graphiql-container {
+            height: 100%;
+        }
+    </style>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/graphiql@3/graphiql.min.css" />
+</head>
+<body>
+    <div id="graphiql">Loading GraphiQL...</div>
+    
+    <script src="https://unpkg.com/graphiql@3/graphiql.min.js" type="application/javascript"></script>
+    <script>
+        const root = ReactDOM.createRoot(document.getElementById('graphiql'));
+        const fetcher = GraphiQL.createFetcher({
+            url: '/graphql',
+        });
+        
+        const defaultQuery = `# Smart City Platform GraphQL API
+# Bienvenue! Testez les requêtes ci-dessous:
+
+# Exemple 1: Obtenir tous les incidents
+query GetAllIncidents {
+  getAllIncidents {
+    id
+    type
+    location
+    status
+    etaOfUnit
+  }
+}
+
+# Exemple 2: Obtenir un aperçu de la ville
+query GetCityOverview {
+  getCityOverview(zoneId: "zone1") {
+    zone {
+      id
+      name
+      coordinates
+    }
+    currentAQI
+    trendingPollutants
+    nearestStations {
+      id
+      name
+      location
+    }
+    activeIncidents {
+      id
+      type
+      location
+      status
+    }
+  }
+}
+
+# Exemple 3: Obtenir des suggestions de voyage
+query GetTravelSuggestions {
+  getTravelSuggestions(from: "Central Station", to: "North Station") {
+    fromStation
+    toStation
+    recommendedLine
+    airQualityRecommendation
+  }
+}
+
+# Exemple 4: Obtenir un résumé d'incident spécifique
+query GetIncident {
+  getIncidentSummary(id: "incident1") {
+    id
+    type
+    location
+    status
+    etaOfUnit
+  }
+}
+`;
+        
+        root.render(
+            React.createElement(GraphiQL, {
+                fetcher,
+                defaultQuery,
+                headerEditorEnabled: true,
+                shouldPersistHeaders: true
+            })
+        );
+    </script>
+</body>
+</html>

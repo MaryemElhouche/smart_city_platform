@@ -1,3 +1,4 @@
+.env
 # Ignorer tous les dossiers target
 **/target/
 *.jar

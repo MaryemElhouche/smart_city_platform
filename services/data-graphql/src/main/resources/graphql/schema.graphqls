@@ -1,0 +1,48 @@
+type Zone {
+    id: ID!
+    name: String!
+    coordinates: String
+}
+
+type Station {
+    id: ID!
+    name: String!
+    location: String!
+}
+
+type EmergencyEventSummary {
+    id: ID!
+    type: String!
+    location: String!
+    status: String!
+}
+
+type CityOverview {
+    zone: Zone!
+    currentAQI: Float!
+    trendingPollutants: [String!]!
+    nearestStations: [Station!]!
+    activeIncidents: [EmergencyEventSummary!]!
+}
+
+type TravelSuggestions {
+    fromStation: String!
+    toStation: String!
+    recommendedLine: String!
+    airQualityRecommendation: String!
+}
+
+type IncidentSummary {
+    id: ID!
+    type: String!
+    location: String!
+    status: String!
+    etaOfUnit: String
+}
+
+type Query {
+    getCityOverview(zoneId: ID!): CityOverview
+    getTravelSuggestions(from: String!, to: String!): TravelSuggestions
+    getIncidentSummary(id: ID!): IncidentSummary
+    getAllIncidents: [IncidentSummary!]!
+}

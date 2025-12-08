@@ -3,11 +3,10 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/mobility
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    # Password provided by user
-    password: mypush@02
+    url: ${DB_URL_MOBILITY}
+    username: ${DB_USERNAME_MOBILITY}
+    password: ${DB_PASSWORD_MOBILITY}
+
   jpa:
     hibernate:
       ddl-auto: update
