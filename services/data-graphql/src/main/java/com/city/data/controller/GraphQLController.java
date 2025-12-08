@@ -1,8 +1,8 @@
 package com.city.data.controller;
 
-import com.city.data.model.CityOverview;
-import com.city.data.model.IncidentSummary;
-import com.city.data.model.TravelSuggestions;
+import com.city.data.entity.CityOverview;
+import com.city.data.entity.IncidentSummary;
+import com.city.data.entity.TravelSuggestions;
 import com.city.data.service.DataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;

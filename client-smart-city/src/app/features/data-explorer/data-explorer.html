@@ -1,0 +1,82 @@
+<div class="data-explorer fade-in">
+      <div class="page-header">
+        <div>
+          <h1>Data Explorer</h1>
+          <p class="subtitle">Execute GraphQL queries</p>
+        </div>
+      </div>
+      
+      <div class="explorer-layout">
+        <div class="schema-panel">
+          <app-card title="Schema">
+            <div class="schema-content">
+              <div class="schema-section">
+                <h4>Types</h4>
+                <div class="schema-item">Sensor</div>
+                <div class="schema-item">Vehicle</div>
+                <div class="schema-item">Emergency</div>
+              </div>
+              
+              <div class="schema-section">
+                <h4>Queries</h4>
+                <div class="schema-item clickable" (click)="insertQuery('sensors')">
+                  sensors
+                </div>
+                <div class="schema-item clickable" (click)="insertQuery('vehicles')">
+                  vehicles
+                </div>
+                <div class="schema-item clickable" (click)="insertQuery('emergencies')">
+                  emergencies
+                </div>
+              </div>
+            </div>
+          </app-card>
+        </div>
+        
+        <div class="editor-panel">
+          <app-card title="Query Editor">
+            <div header-actions>
+              <app-button 
+                icon="play_arrow" 
+                size="sm" 
+                (click)="executeQuery()"
+                [loading]="executing()">
+                Execute
+              </app-button>
+            </div>
+            
+            <textarea 
+              class="query-editor"
+              [(ngModel)]="currentQuery"
+              placeholder="Enter your GraphQL query here..."></textarea>
+          </app-card>
+          
+          <app-card title="Query History">
+            <div class="history-list">
+              <div 
+                *ngFor="let query of queryHistory()" 
+                class="history-item"
+                (click)="loadQuery(query)">
+                <div class="history-time">{{ formatDate(query.timestamp) }}</div>
+                <div class="history-query">{{ query.query.substring(0, 50) }}...</div>
+              </div>
+              
+              <div *ngIf="queryHistory().length === 0" class="empty-state">
+                No query history yet
+              </div>
+            </div>
+          </app-card>
+        </div>
+        
+        <div class="result-panel">
+          <app-card title="Result">
+            <div class="result-content">
+              <pre *ngIf="result()">{{ result() | json }}</pre>
+              <div *ngIf="!result()" class="empty-state">
+                Execute a query to see results
+              </div>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </div>

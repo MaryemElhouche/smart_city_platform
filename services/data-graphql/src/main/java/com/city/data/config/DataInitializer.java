@@ -1,6 +1,6 @@
 package com.city.data.config;
 
-import com.city.data.model.*;
+import com.city.data.entity.*;
 import com.city.data.repository.CityOverviewRepository;
 import com.city.data.repository.IncidentSummaryRepository;
 import com.city.data.repository.TravelSuggestionsRepository;

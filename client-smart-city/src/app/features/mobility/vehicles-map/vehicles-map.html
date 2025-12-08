@@ -1,0 +1,34 @@
+<div class="map-page fade-in">
+      <div class="page-header">
+        <button class="back-btn" (click)="goBack()">
+          <span class="material-icons">arrow_back</span>
+          <span>Back to List</span>
+        </button>
+        
+        <app-button icon="refresh" (click)="loadVehicles()" [loading]="loading()">
+          Refresh
+        </app-button>
+      </div>
+      
+      <div class="map-container">
+        <app-card title="Live Vehicle Tracking" [loading]="loading()">
+          <app-map [markers]="mapMarkers()"></app-map>
+        </app-card>
+        
+        <div class="map-legend">
+          <h3>Legend</h3>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #28B463;"></div>
+            <span>Running</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #F39C12;"></div>
+            <span>Stopped</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #95A5A6;"></div>
+            <span>Maintenance</span>
+          </div>
+        </div>
+      </div>
+    </div>

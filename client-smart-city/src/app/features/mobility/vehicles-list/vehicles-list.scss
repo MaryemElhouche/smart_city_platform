@@ -1,0 +1,77 @@
+.vehicles-page {
+      padding: 32px;
+      max-width: 1420px;
+      margin: 0 auto;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    
+    .page-header h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: var(--text-dark);
+    }
+    
+    .subtitle {
+      color: var(--text-light);
+      font-size: 16px;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .filter-section {
+      margin-bottom: 24px;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border: 2px solid var(--border-color);
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+    
+    .filter-btn:hover {
+      border-color: var(--primary-blue);
+      background: rgba(33, 97, 140, 0.05);
+    }
+    
+    .filter-btn.active {
+      border-color: var(--primary-blue);
+      background: var(--primary-blue);
+      color: white;
+    }
+    
+    .filter-btn .count {
+      background: rgba(0,0,0,0.1);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .filter-btn.active .count {
+      background: rgba(255,255,255,0.2);
+    }
