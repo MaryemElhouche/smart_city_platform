@@ -1,8 +1,8 @@
 package com.city.data.service;
 
-import com.city.data.model.CityOverview;
-import com.city.data.model.IncidentSummary;
-import com.city.data.model.TravelSuggestions;
+import com.city.data.entity.CityOverview;
+import com.city.data.entity.IncidentSummary;
+import com.city.data.entity.TravelSuggestions;
 import com.city.data.repository.CityOverviewRepository;
 import com.city.data.repository.IncidentSummaryRepository;
 import com.city.data.repository.TravelSuggestionsRepository;

@@ -1,8 +1,9 @@
 package com.city.data.repository;
 
-import com.city.data.model.TravelSuggestions;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
+
+import com.city.data.entity.TravelSuggestions;
 
 import java.util.Optional;
 
