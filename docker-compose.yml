@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+	postgres_emergency:
+		image: postgres:15-alpine
+		container_name: postgres_emergency
+		environment:
+			- POSTGRES_DB=emergencydb
+			- POSTGRES_USER=postgres
+			- POSTGRES_PASSWORD=postgres
+		ports:
+			- "5433:5432"
+		volumes:
+			- emergency_db_data:/var/lib/postgresql/data
+
+	postgres_mobility:
+		image: postgres:15-alpine
+		container_name: postgres_mobility
+		environment:
+			- POSTGRES_DB=mobilitydb
+			- POSTGRES_USER=postgres
+			- POSTGRES_PASSWORD=postgres
+		ports:
+			- "5434:5432"
+		volumes:
+			- mobility_db_data:/var/lib/postgresql/data
+
+	emergency-grpc:
+		build:
+			context: ./services/emergency-grpc
+			dockerfile: Dockerfile
+		container_name: emergency-grpc
+		depends_on:
+			- postgres_emergency
+		environment:
+			- DB_URL_EMERGENCY=jdbc:postgresql://postgres_emergency:5432/emergencydb
+			- DB_USERNAME_EMERGENCY=postgres
+			- DB_PASSWORD_EMERGENCY=postgres
+		ports:
+			- "8082:8082"
+		restart: unless-stopped
+
+	mobility:
+		build:
+			context: ./services/mobility
+			dockerfile: Dockerfile
+		container_name: mobility
+		depends_on:
+			- postgres_mobility
+		environment:
+			- DB_URL_MOBILITY=jdbc:postgresql://postgres_mobility:5432/mobilitydb
+			- DB_USERNAME_MOBILITY=postgres
+			- DB_PASSWORD_MOBILITY=postgres
+		ports:
+			- "8081:8081"
+		restart: unless-stopped
+
+volumes:
+	emergency_db_data:
+	mobility_db_data:

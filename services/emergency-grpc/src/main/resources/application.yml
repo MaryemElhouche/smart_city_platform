@@ -6,6 +6,8 @@ spring:
     url: ${DB_URL_EMERGENCY}
     username: ${DB_USERNAME_EMERGENCY}
     password: ${DB_PASSWORD_EMERGENCY}
+    driver-class-name: org.postgresql.Driver
+
 
   jpa:
     hibernate:
