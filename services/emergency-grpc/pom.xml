@@ -21,7 +21,7 @@
         <protobuf.version>3.21.12</protobuf.version>
         <grpc.version>1.58.0</grpc.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <os.detected.classifier>windows-x86_64</os.detected.classifier>
+        <skipProtobuf>false</skipProtobuf>
     </properties>
 
     <dependencies>
@@ -158,6 +158,7 @@
                 <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
                 <pluginId>grpc-java</pluginId>
                 <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+                <skip>${skipProtobuf}</skip>
             </configuration>
             <executions>
                 <execution>

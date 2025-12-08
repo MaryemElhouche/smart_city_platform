@@ -2,8 +2,8 @@
 FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /app
 
-# Installer Maven
-RUN apk add --no-cache maven
+# Installer Maven et protoc (protobuf compiler)
+RUN apk add --no-cache maven protobuf
 
 # Préparer le cache des dépendances
 COPY pom.xml .
@@ -11,7 +11,10 @@ RUN mvn -q -e -DskipTests -DremoteRepositories=all dependency:go-offline --no-tr
 
 # Copier les sources et builder
 COPY src ./src
-RUN mvn -q clean package -DskipTests --no-transfer-progress
+# Inclure les sources générées protobuf/grpc si présentes
+COPY target/generated-sources/protobuf/java ./src/main/java
+COPY target/generated-sources/protobuf/grpc-java ./src/main/java
+RUN mvn -q clean package -DskipTests -DskipProtobuf=true --no-transfer-progress
 
 # Étape 2 : Runtime
 FROM eclipse-temurin:17-jre-alpine
