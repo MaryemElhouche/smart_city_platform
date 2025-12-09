@@ -4,7 +4,9 @@ import { Router } from '@angular/router';
 import { Card } from '../../../shared/ui/card/card';
 import { Map, MapMarker } from '../../../shared/ui/map/map';
 import { Button } from '../../../shared/ui/button/button';
-import { MobilityApiService, Vehicle } from '../../../core/services/mobility-api.service';
+import { MobilityService } from '../../../core/services/mobility.service';
+import { Vehicle, Station } from '../../../core/models/mobility.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-vehicles-map',
@@ -18,33 +20,43 @@ export class VehiclesMap implements OnInit {
   mapMarkers = signal<MapMarker[]>([]);
   
   constructor(
-    private mobilityService: MobilityApiService,
+    private mobilityService: MobilityService,
     private router: Router
   ) {}
   
   ngOnInit() {
-    this.loadVehicles();
+    this.loadData();
   }
   
-  loadVehicles() {
+  loadData() {
     this.loading.set(true);
-    this.mobilityService.getAllVehicles().subscribe(vehicles => {
-      this.mapMarkers.set(vehicles.map(v => this.vehicleToMarker(v)));
-      this.loading.set(false);
+    
+    forkJoin({
+      vehicles: this.mobilityService.getVehicles(),
+      stations: this.mobilityService.getStations()
+    }).subscribe({
+      next: ({ vehicles, stations }) => {
+        const markers: MapMarker[] = [
+          ...stations.map(s => this.stationToMarker(s)),
+          // Vehicles don't have location in the model, so we skip them
+          // If you add location to Vehicle model, uncomment:
+          // ...vehicles.map(v => this.vehicleToMarker(v))
+        ];
+        this.mapMarkers.set(markers);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+      }
     });
   }
   
-  vehicleToMarker(vehicle: Vehicle): MapMarker {
-    const colors = {
-      running: '#28B463',
-      stopped: '#F39C12',
-      maintenance: '#95A5A6'
-    };
-    
+  stationToMarker(station: Station): MapMarker {
     return {
-      position: vehicle.location,
-      title: `${vehicle.id} (${vehicle.speed} km/h)`,
-      color: colors[vehicle.status]
+      position: [station.latitude, station.longitude],
+      title: station.name,
+      color: '#21618C',
+      icon: 'directions_bus'
     };
   }
   

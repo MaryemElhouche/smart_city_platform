@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Card } from '../../../shared/ui/card/card';
 import { Button } from '../../../shared/ui/button/button';
-import { EmergencyApiService, Emergency } from '../../../core/services/emergency-api.service';
+import { EmergencyService } from '../../../core/services/emergency.service';
+import { EmergencyEvent } from '../../../core/models/emergency.model';
 
 @Component({
   selector: 'app-timeline',
@@ -15,12 +16,12 @@ import { EmergencyApiService, Emergency } from '../../../core/services/emergency
 
 export class Timeline implements OnInit {
   loading = signal(false);
-  emergencies = signal<Emergency[]>([]);
+  emergencies = signal<EmergencyEvent[]>([]);
   reportedCount = signal(0);
   inProgressCount = signal(0);
   resolvedCount = signal(0);
   
-  constructor(private emergencyService: EmergencyApiService) {}
+  constructor(private emergencyService: EmergencyService) {}
   
   ngOnInit() {
     this.loadEmergencies();
@@ -28,7 +29,7 @@ export class Timeline implements OnInit {
   
   loadEmergencies() {
     this.loading.set(true);
-    this.emergencyService.getAllEmergencies().subscribe(emergencies => {
+    this.emergencyService.getEvents().subscribe(emergencies => {
       this.emergencies.set(emergencies);
       this.updateCounts();
       this.loading.set(false);
@@ -37,19 +38,19 @@ export class Timeline implements OnInit {
   
   updateCounts() {
     const emergencies = this.emergencies();
-    this.reportedCount.set(emergencies.filter(e => e.status === 'reported').length);
-    this.inProgressCount.set(emergencies.filter(e => e.status === 'in-progress').length);
-    this.resolvedCount.set(emergencies.filter(e => e.status === 'resolved').length);
+    this.reportedCount.set(emergencies.filter(e => e.status === 'REPORTED').length);
+    this.inProgressCount.set(emergencies.filter(e => e.status === 'IN_PROGRESS').length);
+    this.resolvedCount.set(emergencies.filter(e => e.status === 'RESOLVED').length);
   }
   
-  getIcon(type: Emergency['type']): string {
-    const icons: Record<Emergency['type'], string> = {
-      fire: 'local_fire_department',
-      accident: 'car_crash',
-      medical: 'medical_services',
-      other: 'report_problem'
+  getSeverityIcon(severity: string): string {
+    const icons: Record<string, string> = {
+      'LOW': 'info',
+      'MEDIUM': 'warning',
+      'HIGH': 'error',
+      'CRITICAL': 'local_fire_department'
     };
-    return icons[type];
+    return icons[severity] || 'report_problem';
   }
   
   formatTime(timestamp: string): string {

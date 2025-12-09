@@ -5,8 +5,10 @@ import { Card } from '../../../shared/ui/card/card';
 import { Table, TableColumn } from '../../../shared/ui/table/table';
 import { Button } from '../../../shared/ui/button/button';
 import { Map, MapMarker } from '../../../shared/ui/map/map';
-import { AirQualityApiService, AirQualitySensor } from '../../../core/services/air-quality-api.service';
+import { AirQualityService } from '../../../core/services/air-quality.service';
+import { Sensor, Measurement } from '../../../core/models/air-quality.model';
 import { ToastService } from '../../../core/services/toast.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-sensors-list',
@@ -23,7 +25,8 @@ import { ToastService } from '../../../core/services/toast.service';
 })
 export class SensorsList implements OnInit {
   loading = signal(false);
-  sensors = signal<AirQualitySensor[]>([]);
+  sensors = signal<Sensor[]>([]);
+  sensorData = signal<Array<Sensor & { currentAQI?: number, alert?: boolean }>>([]);
   viewMode = signal<'table' | 'map'>('table');
   goodSensors = signal(0);
   alertSensors = signal(0);
@@ -31,16 +34,17 @@ export class SensorsList implements OnInit {
   columns: TableColumn[] = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'zone', label: 'Zone', sortable: true },
-    { key: 'currentAQI', label: 'Current AQI', sortable: true, type: 'number' },
+    { key: 'model', label: 'Model', sortable: true },
+    { key: 'manufacturer', label: 'Manufacturer', sortable: true },
     { key: 'status', label: 'Status', type: 'badge' },
-    { key: 'alert', label: 'Alert', type: 'badge' },
-    { key: 'lastUpdate', label: 'Last Update', sortable: true, type: 'date' }
+    { key: 'currentAQI', label: 'Current AQI', sortable: true, type: 'number' },
+    { key: 'installedAt', label: 'Installed', sortable: true, type: 'date' }
   ];
   
   mapMarkers = signal<MapMarker[]>([]);
   
   constructor(
-    private readonly airQualityService: AirQualityApiService,
+    private readonly airQualityService: AirQualityService,
     private readonly router: Router,
     private readonly toast: ToastService
   ) {}
@@ -51,17 +55,33 @@ export class SensorsList implements OnInit {
   
   loadSensors() {
     this.loading.set(true);
-    this.airQualityService.getAllSensors().subscribe({
-      next: (sensors) => {
+    
+    forkJoin({
+      sensors: this.airQualityService.getSensors(),
+      alerts: this.airQualityService.getActiveAlerts()
+    }).subscribe({
+      next: ({ sensors, alerts }) => {
         this.sensors.set(sensors);
-        this.goodSensors.set(sensors.filter(s => !s.alert).length);
-        this.alertSensors.set(sensors.filter(s => s.alert).length);
         
-        // Update map markers
+        // Get latest measurements for each sensor to show AQI
+        const sensorsWithData = sensors.map(s => {
+          const sensorAlerts = alerts.filter(a => a.zone === s.zone);
+          return {
+            ...s,
+            currentAQI: 0, // Will be updated with real measurement
+            alert: sensorAlerts.some(a => a.severity === 'CRITICAL' || a.severity === 'HIGH')
+          };
+        });
+        
+        this.sensorData.set(sensorsWithData);
+        this.goodSensors.set(sensorsWithData.filter(s => !s.alert).length);
+        this.alertSensors.set(sensorsWithData.filter(s => s.alert).length);
+        
+        // Update map markers using [lat, lng] format
         this.mapMarkers.set(sensors.map(s => ({
-          position: s.coordinates,
-          title: `${s.zone} (AQI: ${s.currentAQI})`,
-          color: s.alert ? '#E74C3C' : '#28B463'
+          position: [s.latitude, s.longitude],
+          title: `${s.zone} (${s.model})`,
+          color: s.status === 'ACTIVE' ? '#28B463' : '#E74C3C'
         })));
         
         this.loading.set(false);
@@ -74,7 +94,7 @@ export class SensorsList implements OnInit {
     });
   }
   
-  viewDetails(sensor: AirQualitySensor) {
+  viewDetails(sensor: Sensor) {
     this.router.navigate(['/air-quality/sensor', sensor.id]);
   }
   

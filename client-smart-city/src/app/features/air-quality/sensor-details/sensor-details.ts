@@ -4,8 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Card } from '../../../shared/ui/card/card';
 import { Button } from '../../../shared/ui/button/button';
 import { LineChart } from '../../../shared/ui/line-chart/line-chart';
-import { AirQualityApiService, AirQualitySensor, AQIHistory } from '../../../core/services/air-quality-api.service';
+import { AirQualityService } from '../../../core/services/air-quality.service';
+import { Sensor, Measurement } from '../../../core/models/air-quality.model';
 import { ToastService } from '../../../core/services/toast.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-sensor-details',
@@ -16,15 +18,15 @@ import { ToastService } from '../../../core/services/toast.service';
 })
 
 export class SensorDetails implements OnInit {
-  sensor = signal<AirQualitySensor | undefined>(undefined);
-  history = signal<AQIHistory[]>([]);
+  sensor = signal<Sensor | undefined>(undefined);
+  measurements = signal<Measurement[]>([]);
   chartData = signal<{ label: string; value: number }[]>([]);
   loadingHistory = signal(true);
   
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly airQualityService: AirQualityApiService,
+    private readonly airQualityService: AirQualityService,
     private readonly toast: ToastService
   ) {}
   
@@ -36,19 +38,30 @@ export class SensorDetails implements OnInit {
   }
   
   loadSensorDetails(id: string) {
-    this.airQualityService.getSensorById(id).subscribe(sensor => {
-      this.sensor.set(sensor);
-    });
+    this.loadingHistory.set(true);
     
-    this.airQualityService.getSensorHistory(id).subscribe(history => {
-      this.history.set(history);
-      this.chartData.set(
-        history.map(h => ({
-          label: new Date(h.timestamp).getHours() + 'h',
-          value: h.value
-        }))
-      );
-      this.loadingHistory.set(false);
+    forkJoin({
+      sensors: this.airQualityService.getSensors(),
+      measurements: this.airQualityService.getMeasurementsBySensor(id)
+    }).subscribe({
+      next: ({ sensors, measurements }) => {
+        const sensor = sensors.find(s => s.id === id);
+        this.sensor.set(sensor);
+        this.measurements.set(measurements);
+        
+        // Create chart data from measurements
+        this.chartData.set(
+          measurements.slice(-24).map(m => ({
+            label: new Date(m.measurementTime).getHours() + 'h',
+            value: m.aqi
+          }))
+        );
+        this.loadingHistory.set(false);
+      },
+      error: () => {
+        this.loadingHistory.set(false);
+        this.toast.error('Failed to load sensor details');
+      }
     });
   }
   
@@ -83,15 +96,15 @@ export class SensorDetails implements OnInit {
     const url = globalThis.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `sensor-${this.sensor()?.id}-history.csv`;
+    a.download = `sensor-${this.sensor()?.id}-measurements.csv`;
     a.click();
     this.toast.success('CSV exported successfully');
   }
   
   generateCSV(): string {
-    let csv = 'Timestamp,AQI Value,Status\n';
-    for (const item of this.history()) {
-      csv += `${item.timestamp},${item.value},${this.getStatusFromAQI(item.value)}\n`;
+    let csv = 'Timestamp,AQI,PM2.5,PM10,CO2,NO2,O3,Temperature,Humidity\\n';
+    for (const m of this.measurements()) {
+      csv += `${m.measurementTime},${m.aqi},${m.pm25},${m.pm10},${m.co2},${m.no2},${m.o3},${m.temperature},${m.humidity}\\n`;
     }
     return csv;
   }

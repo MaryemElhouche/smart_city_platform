@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class GraphiQLController {
 
-    @GetMapping("/graphiql")
+    @GetMapping({"/graphiql", "/graphql/graphiql"})
     public String graphiql() {
         return "graphiql";
     }

@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.city.mobility</groupId>
+    <groupId>com.city.airquality</groupId>
     <artifactId>air-quality-soap</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>air-quality-soap</name>

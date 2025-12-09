@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Card } from '../../shared/ui/card/card';
 import { Button } from '../../shared/ui/button/button';
-import { GraphqlApiService, GraphQLQuery } from '../../core/services/graphql-api.service';
+import { GraphQLService } from '../../core/services/graphql.service';
 import { ToastService } from '../../core/services/toast.service';
 
 @Component({
@@ -17,37 +17,56 @@ export class DataExplorer {
   currentQuery = '';
   result = signal<any>(null);
   executing = signal(false);
-  queryHistory = signal<GraphQLQuery[]>([]);
+  queryHistory = signal<Array<{query: string, timestamp: string}>>([]);
   
   constructor(
-    private graphqlService: GraphqlApiService,
+    private graphqlService: GraphQLService,
     private toast: ToastService
-  ) {
-    this.queryHistory.set(this.graphqlService.getQueryHistory());
-  }
+  ) {}
   
   insertQuery(type: string) {
     const queries: Record<string, string> = {
-      sensors: `query {
-  sensors {
-    id
-    zone
-    aqi
+      cityOverview: `query {
+  getCityOverview(zoneId: "zone1") {
+    zone {
+      id
+      name
+      type
+    }
+    currentAQI
+    trendingPollutants
+    nearestStations {
+      id
+      name
+      latitude
+      longitude
+    }
+    activeIncidents {
+      id
+      type
+      location
+      status
+    }
   }
 }`,
-      vehicles: `query {
-  vehicles {
+      incidents: `query {
+  getAllIncidents {
     id
     type
+    description
+    severity
     status
+    reportedAt
+    resolvedAt
   }
 }`,
-      emergencies: `query {
-  emergencies {
-    id
-    zone
-    type
-    status
+      travelSuggestions: `query {
+  getTravelSuggestions(fromStation: "Central", toStation: "North") {
+    fromStation
+    toStation
+    recommendedLine
+    estimatedTime
+    airQualityRecommendation
   }
 }`
     };
@@ -65,19 +84,21 @@ export class DataExplorer {
     this.graphqlService.executeQuery(this.currentQuery).subscribe({
       next: (result) => {
         this.result.set(result);
-        this.graphqlService.saveQuery(this.currentQuery);
-        this.queryHistory.set(this.graphqlService.getQueryHistory());
+        this.queryHistory.update(history => [
+          { query: this.currentQuery, timestamp: new Date().toISOString() },
+          ...history.slice(0, 9)
+        ]);
         this.executing.set(false);
         this.toast.success('Query executed successfully');
       },
-      error: () => {
+      error: (err) => {
         this.executing.set(false);
-        this.toast.error('Query execution failed');
+        this.toast.error('Query execution failed: ' + err.message);
       }
     });
   }
   
-  loadQuery(query: GraphQLQuery) {
+  loadQuery(query: {query: string, timestamp: string}) {
     this.currentQuery = query.query;
   }
   

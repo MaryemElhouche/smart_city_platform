@@ -1,5 +1,5 @@
-import { Component, Input, ElementRef, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, ElementRef, ViewChild, AfterViewInit, OnChanges, PLATFORM_ID, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-line-chart',
@@ -14,13 +14,17 @@ export class LineChart implements AfterViewInit, OnChanges {
   @Input() color = '#21618C';
   private viewReady = false;
   
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  
   ngAfterViewInit() {
     this.viewReady = true;
-    this.drawChart();
+    if (isPlatformBrowser(this.platformId)) {
+      this.drawChart();
+    }
   }
 
   ngOnChanges() {
-    if (this.viewReady) {
+    if (this.viewReady && isPlatformBrowser(this.platformId)) {
       this.drawChart();
     }
   }

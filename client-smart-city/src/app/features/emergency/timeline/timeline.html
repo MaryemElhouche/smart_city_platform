@@ -44,30 +44,35 @@
           <div 
             *ngFor="let emergency of emergencies()" 
             class="timeline-item"
-            [class.resolved]="emergency.status === 'resolved'">
-            <div class="timeline-marker" [class]="'marker-' + emergency.type"></div>
+            [class.resolved]="emergency.status === 'RESOLVED'">
+            <div class="timeline-marker" [class]="'marker-' + emergency.severity.toLowerCase()"></div>
             
             <div class="timeline-content">
               <div class="timeline-header">
                 <div class="emergency-title">
-                  <span class="material-icons">{{ getIcon(emergency.type) }}</span>
-                  <h3>{{ emergency.type | titlecase }} in {{ emergency.zone }}</h3>
+                  <span class="material-icons">{{ getSeverityIcon(emergency.severity) }}</span>
+                  <h3>{{ emergency.title }}</h3>
                 </div>
                 
-                <span [class]="'status-badge ' + emergency.status">
-                  {{ emergency.status | uppercase }}
+                <span [class]="'status-badge ' + emergency.status.toLowerCase()">
+                  {{ emergency.status }}
                 </span>
               </div>
               
               <p class="emergency-description">{{ emergency.description }}</p>
               
               <div class="emergency-footer">
-                <span class="emergency-time">
-                  <span class="material-icons">schedule</span>
-                  {{ formatTime(emergency.timestamp) }}
+                <span class="emergency-severity">
+                  <span class="material-icons">warning</span>
+                  {{ emergency.severity }}
                 </span>
                 
                 <span class="emergency-id">ID: {{ emergency.id }}</span>
+                
+                <span *ngIf="emergency.location" class="emergency-location">
+                  <span class="material-icons">location_on</span>
+                  {{ emergency.location.address }}
+                </span>
               </div>
             </div>
           </div>

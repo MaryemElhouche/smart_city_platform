@@ -26,9 +26,9 @@ export class Map implements AfterViewInit {
   gridLines = Array.from({ length: 20 }, (_, i) => i);
   
   ngAfterViewInit() {
-    if (this.mapContainer) {
-      this.width = this.mapContainer.nativeElement.offsetWidth;
-      this.height = this.mapContainer.nativeElement.offsetHeight;
+    if (this.mapContainer?.nativeElement?.offsetWidth) {
+      this.width = this.mapContainer.nativeElement.offsetWidth || 800;
+      this.height = this.mapContainer.nativeElement.offsetHeight || 400;
     }
   }
   

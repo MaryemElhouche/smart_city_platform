@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Card } from '../../../shared/ui/card/card';
 import { Button } from '../../../shared/ui/button/button';
-import { EmergencyApiService, EmergencyReport } from '../../../core/services/emergency-api.service';
+import { EmergencyService } from '../../../core/services/emergency.service';
+import { EmergencyEvent } from '../../../core/models/emergency.model';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
@@ -16,37 +17,31 @@ import { ToastService } from '../../../core/services/toast.service';
 })
 
 export class ReportForm {
-report: EmergencyReport = {
-    zone: '',
-    type: 'fire',
-    description: ''
+  report: Partial<EmergencyEvent> = {
+    title: '',
+    description: '',
+    severity: 'MEDIUM',
+    status: 'REPORTED'
   };
   
   submitting = signal(false);
-  selectedFileName = signal('');
+  
+  severityLevels = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
   
   constructor(
-    private emergencyService: EmergencyApiService,
+    private emergencyService: EmergencyService,
     private toast: ToastService,
     private router: Router
   ) {}
   
-  onFileSelect(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.report.image = file;
-      this.selectedFileName.set(file.name);
-    }
-  }
-  
   submitReport() {
     this.submitting.set(true);
     
-    this.emergencyService.submitReport(this.report).subscribe({
-      next: (response) => {
+    this.emergencyService.createEvent(this.report as Omit<EmergencyEvent, 'id'>).subscribe({
+      next: () => {
         this.toast.success('Emergency report submitted successfully');
         this.submitting.set(false);
-        this.router.navigate(['/emergency/timeline']);
+        this.router.navigate(['/emergency']);
       },
       error: () => {
         this.toast.error('Failed to submit report');

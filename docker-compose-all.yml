@@ -1,0 +1,117 @@
+version: "3.9"
+
+services:
+  # PostgreSQL for Emergency Service
+  postgres_emergency:
+    image: postgres:15-alpine
+    container_name: postgres_emergency
+    environment:
+      - POSTGRES_DB=emergencydb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - emergency_db_data:/var/lib/postgresql/data
+    networks:
+      - smart_city_network
+
+  # PostgreSQL for Mobility Service
+  postgres_mobility:
+    image: postgres:15-alpine
+    container_name: postgres_mobility
+    environment:
+      - POSTGRES_DB=mobilitydb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - mobility_db_data:/var/lib/postgresql/data
+    networks:
+      - smart_city_network
+
+  # Emergency Service (gRPC)
+  emergency-grpc:
+    build:
+      context: ./services/emergency-grpc
+      dockerfile: Dockerfile
+    container_name: emergency-grpc
+    depends_on:
+      - postgres_emergency
+    environment:
+      - DB_URL_EMERGENCY=jdbc:postgresql://postgres_emergency:5432/emergencydb
+      - DB_USERNAME_EMERGENCY=postgres
+      - DB_PASSWORD_EMERGENCY=postgres
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+    networks:
+      - smart_city_network
+
+  # Mobility Service (REST)
+  mobility:
+    build:
+      context: ./services/mobility
+      dockerfile: Dockerfile
+    container_name: mobility
+    depends_on:
+      - postgres_mobility
+    environment:
+      - DB_URL_MOBILITY=jdbc:postgresql://postgres_mobility:5432/mobilitydb
+      - DB_USERNAME_MOBILITY=postgres
+      - DB_PASSWORD_MOBILITY=postgres
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+    networks:
+      - smart_city_network
+
+  # Air Quality Service (SOAP)
+  air-quality-soap:
+    build:
+      context: ./services/air-quality-soap
+      dockerfile: Dockerfile
+    container_name: air-quality-soap
+    ports:
+      - "8083:8083"
+    restart: unless-stopped
+    networks:
+      - smart_city_network
+
+  # Data GraphQL Service
+  data-graphql:
+    build:
+      context: ./services/data-graphql
+      dockerfile: Dockerfile
+    container_name: data-graphql
+    ports:
+      - "8084:8084"
+    restart: unless-stopped
+    networks:
+      - smart_city_network
+
+  # API Gateway
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    depends_on:
+      - emergency-grpc
+      - mobility
+      - air-quality-soap
+      - data-graphql
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - smart_city_network
+
+volumes:
+  emergency_db_data:
+  mobility_db_data:
+
+networks:
+  smart_city_network:
+    driver: bridge

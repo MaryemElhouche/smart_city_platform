@@ -1,5 +1,6 @@
 server:
   port: 8084
+  forward-headers-strategy: framework
 
 spring:
   application:
@@ -10,8 +11,7 @@ spring:
       database: smart_city
   graphql:
     graphiql:
-      enabled: true
-      path: /graphiql
+      enabled: false
     schema:
       printer:
         enabled: true

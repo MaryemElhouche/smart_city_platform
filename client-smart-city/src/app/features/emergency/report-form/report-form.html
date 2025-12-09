@@ -10,35 +10,27 @@
         <app-card>
           <form (ngSubmit)="submitReport()" #reportForm="ngForm">
             <div class="form-group">
-              <label for="zone">Zone *</label>
-              <select 
-                id="zone" 
-                name="zone"
-                [(ngModel)]="report.zone"
+              <label for="title">Title *</label>
+              <input 
+                type="text"
+                id="title" 
+                name="title"
+                [(ngModel)]="report.title"
                 required
-                class="form-control">
-                <option value="">Select a zone</option>
-                <option value="Downtown">Downtown</option>
-                <option value="Industrial Area">Industrial Area</option>
-                <option value="Residential North">Residential North</option>
-                <option value="Port Area">Port Area</option>
-                <option value="Highway A1">Highway A1</option>
-              </select>
+                placeholder="Brief title of the emergency"
+                class="form-control" />
             </div>
             
             <div class="form-group">
-              <label for="type">Type *</label>
+              <label for="severity">Severity *</label>
               <select 
-                id="type" 
-                name="type"
-                [(ngModel)]="report.type"
+                id="severity" 
+                name="severity"
+                [(ngModel)]="report.severity"
                 required
                 class="form-control">
-                <option value="">Select type</option>
-                <option value="fire">Fire</option>
-                <option value="accident">Accident</option>
-                <option value="medical">Medical</option>
-                <option value="other">Other</option>
+                <option value="">Select severity</option>
+                <option *ngFor="let s of severityLevels" [value]="s">{{ s }}</option>
               </select>
             </div>
             
@@ -52,22 +44,6 @@
                 rows="5"
                 placeholder="Describe the emergency situation..."
                 class="form-control"></textarea>
-            </div>
-            
-            <div class="form-group">
-              <label for="image">Upload Image (Optional)</label>
-              <div class="file-upload">
-                <input 
-                  type="file" 
-                  id="image"
-                  (change)="onFileSelect($event)"
-                  accept="image/*"
-                  class="file-input">
-                <label for="image" class="file-label">
-                  <span class="material-icons">cloud_upload</span>
-                  <span>{{ selectedFileName() || 'Choose file' }}</span>
-                </label>
-              </div>
             </div>
             
             <div class="form-actions">

@@ -19,8 +19,8 @@
         <app-card title="Current Status">
           <div class="status-content">
             <div class="aqi-display">
-              <div class="aqi-circle" [style.border-color]="getAQIColor(sensor()?.currentAQI || 0)">
-                <span class="aqi-value">{{ sensor()?.currentAQI }}</span>
+              <div class="aqi-circle" [style.border-color]="getAQIColor(measurements().length > 0 ? measurements()[measurements().length - 1].aqi : 0)">
+                <span class="aqi-value">{{ measurements().length > 0 ? measurements()[measurements().length - 1].aqi : '—' }}</span>
                 <span class="aqi-label">AQI</span>
               </div>
             </div>
@@ -28,24 +28,22 @@
             <div class="status-info">
               <div class="info-row">
                 <span class="label">Status:</span>
-                <span [class]="'badge badge-' + sensor()?.status">{{ sensor()?.status }}</span>
+                <span [class]="'badge badge-' + (sensor()?.status || 'unknown').toLowerCase()">{{ sensor()?.status }}</span>
               </div>
               
               <div class="info-row">
-                <span class="label">Alert:</span>
-                <span [class]="'badge badge-' + sensor()?.alert">
-                  {{ sensor()?.alert ? 'Active' : 'None' }}
-                </span>
+                <span class="label">Model:</span>
+                <span>{{ sensor()?.model }}</span>
               </div>
               
               <div class="info-row">
-                <span class="label">Last Update:</span>
-                <span>{{ formatDate(sensor()?.lastUpdate || '') }}</span>
+                <span class="label">Manufacturer:</span>
+                <span>{{ sensor()?.manufacturer }}</span>
               </div>
               
               <div class="info-row">
                 <span class="label">Coordinates:</span>
-                <span>{{ sensor()?.coordinates?.[0]?.toFixed(4) || '—' }}, {{ sensor()?.coordinates?.[1]?.toFixed(4) || '—' }}</span>
+                <span>{{ sensor()?.latitude?.toFixed(4) || '—' }}, {{ sensor()?.longitude?.toFixed(4) || '—' }}</span>
               </div>
             </div>
           </div>
@@ -54,7 +52,7 @@
         <app-card title="24-Hour History" [loading]="loadingHistory()">
           <app-line-chart 
             [data]="chartData()" 
-            [color]="getAQIColor(sensor()?.currentAQI || 0)">
+            [color]="getAQIColor(measurements().length > 0 ? measurements()[measurements().length - 1].aqi : 0)">
           </app-line-chart>
         </app-card>
       </div>
@@ -67,11 +65,11 @@
             <span>Status</span>
           </div>
           
-          <div *ngFor="let item of history()" class="measurement-row">
-            <span>{{ formatTime(item.timestamp) }}</span>
-            <span class="aqi-value">{{ item.value }}</span>
-            <span [class]="'badge badge-' + getStatusFromAQI(item.value)">
-              {{ getStatusFromAQI(item.value) }}
+          <div *ngFor="let item of measurements()" class="measurement-row">
+            <span>{{ formatTime(item.measurementTime) }}</span>
+            <span class="aqi-value">{{ item.aqi }}</span>
+            <span [class]="'badge badge-' + getStatusFromAQI(item.aqi)">
+              {{ getStatusFromAQI(item.aqi) }}
             </span>
           </div>
         </div>

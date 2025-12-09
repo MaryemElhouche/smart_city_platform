@@ -9,8 +9,8 @@ spring:
 
   data:
     mongodb:
-      # Override with environment variable MONGODB_URI in production
-      uri: ${MONGODB_URI:mongodb://localhost:27017/airqualitydb}
+      uri: mongodb+srv://eya:airqualityuser@cluster0.fvdg5x9.mongodb.net/
+      database: airqualitydb
 
   profiles:
     active: default
@@ -18,7 +18,7 @@ spring:
 logging:
   level:
     root: INFO
-    com.city.mobility: DEBUG
+    com.city.airquality: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 

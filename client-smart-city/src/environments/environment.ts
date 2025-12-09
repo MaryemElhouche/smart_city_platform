@@ -1,6 +1,11 @@
 export const environment = {
   production: false,
-  apiGatewayUrl: 'http://localhost:8080/api',
+  apiUrl: 'http://localhost:8080',
+  apiGatewayUrl: 'http://localhost:8080',
+  gatewayAuth: {
+    username: 'admin',
+    password: 'admin123'
+  },
   endpoints: {
     airQuality: '/air-quality',
     mobility: '/mobility',

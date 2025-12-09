@@ -4,10 +4,11 @@ import { RouterModule } from '@angular/router';
 import { Card } from '../../shared/ui/card/card';
 import { LineChart } from '../../shared/ui/line-chart/line-chart';
 import { Map, MapMarker } from '../../shared/ui/map/map';
-import { AirQualityApiService } from '../../core/services/air-quality-api.service';
-import { MobilityApiService } from '../../core/services/mobility-api.service';
-import { GraphqlApiService } from '../../core/services/graphql-api.service';
-import { EmergencyApiService } from '../../core/services/emergency-api.service';
+import { AirQualityService } from '../../core/services/air-quality.service';
+import { MobilityService } from '../../core/services/mobility.service';
+import { GraphQLService } from '../../core/services/graphql.service';
+import { EmergencyService } from '../../core/services/emergency.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,10 +33,10 @@ export class Dashboard implements OnInit {
   aqiChartData = signal<{ label: string; value: number }[]>([]);
   
   constructor(
-    private readonly airQualityService: AirQualityApiService,
-    private readonly mobilityService: MobilityApiService,
-    private readonly graphqlService: GraphqlApiService,
-    private readonly emergencyService: EmergencyApiService
+    private readonly airQualityService: AirQualityService,
+    private readonly mobilityService: MobilityService,
+    private readonly graphqlService: GraphQLService,
+    private readonly emergencyService: EmergencyService
   ) {}
   
   ngOnInit() {
@@ -46,60 +47,62 @@ export class Dashboard implements OnInit {
   loadDashboardData() {
     this.loading.set(true);
     
-    // Load air quality data
-    this.airQualityService.getAllSensors().subscribe(sensors => {
-      const alertCount = sensors.filter(s => s.alert).length;
-      this.airQualityStatus.set(alertCount > 0 ? `${alertCount} Alerts` : 'All Good');
-      
-      // Add sensors to map
-      const sensorMarkers: MapMarker[] = sensors.map(s => ({
-        position: s.coordinates,
-        title: s.zone,
-        color: s.alert ? '#E74C3C' : '#28B463'
-      }));
-      
-      this.mapMarkers.update(markers => [...markers, ...sensorMarkers]);
-      
-      // Load AQI history for chart
-      if (sensors.length > 0) {
-        this.airQualityService.getSensorHistory(sensors[0].id).subscribe(history => {
-          this.aqiChartData.set(
-            history.map(h => ({
-              label: new Date(h.timestamp).getHours() + 'h',
-              value: h.value
-            }))
-          );
-        });
+    forkJoin({
+      sensors: this.airQualityService.getSensors(),
+      alerts: this.airQualityService.getActiveAlerts(),
+      vehicles: this.mobilityService.getVehicles(),
+      stations: this.mobilityService.getStations(),
+      emergencyUnits: this.emergencyService.getUnits(),
+      emergencyEvents: this.emergencyService.getEvents(),
+      cityOverview: this.graphqlService.getCityOverview('zone1')
+    }).subscribe({
+      next: (data) => {
+        // Air Quality
+        const alertCount = data.alerts.length;
+        this.airQualityStatus.set(alertCount > 0 ? `${alertCount} Alerts` : 'All Good');
+        
+        // Add sensors to map (using [lat, lng] tuple format)
+        const sensorMarkers: MapMarker[] = data.sensors
+          .filter(s => s.latitude && s.longitude)
+          .map(s => ({
+            position: [s.latitude, s.longitude],
+            title: s.zone,
+            color: s.status === 'ACTIVE' ? '#28B463' : '#E74C3C'
+          }));
+        
+        // Add stations to map
+        const stationMarkers: MapMarker[] = data.stations.map(s => ({
+          position: [s.latitude, s.longitude],
+          title: s.name,
+          color: '#21618C',
+          icon: 'directions_bus'
+        }));
+        
+        this.mapMarkers.set([...sensorMarkers, ...stationMarkers]);
+        
+        // Set vehicle count
+        this.vehiclesOnline.set(data.vehicles.filter(v => v.status === 'ACTIVE').length);
+        
+        // Set emergency count
+        this.activeEmergencies.set(data.emergencyEvents.length);
+        
+        // Set GraphQL query count (using city overview data)
+        this.queryCount.set(data.cityOverview.activeIncidents.length);
+        
+        // Set AQI chart data from city overview
+        if (data.cityOverview) {
+          this.aqiChartData.set([
+            { label: 'Current AQI', value: data.cityOverview.currentAQI }
+          ]);
+        }
+        
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading dashboard data:', err);
+        this.loading.set(false);
       }
     });
-    
-    // Load mobility data
-    this.mobilityService.getOnlineCount().subscribe(count => {
-      this.vehiclesOnline.set(count);
-    });
-    
-    this.mobilityService.getAllVehicles().subscribe(vehicles => {
-      const vehicleMarkers: MapMarker[] = vehicles.map(v => ({
-        position: v.location,
-        title: v.id,
-        color: '#21618C',
-        icon: 'directions_bus'
-      }));
-      
-      this.mapMarkers.update(markers => [...markers, ...vehicleMarkers]);
-    });
-    
-    // Load emergency data
-    this.emergencyService.getActiveCount().subscribe(count => {
-      this.activeEmergencies.set(count);
-    });
-    
-    // Load GraphQL query count
-    this.graphqlService.getQueryCount().subscribe(count => {
-      this.queryCount.set(count);
-    });
-    
-    setTimeout(() => this.loading.set(false), 1000);
   }
   
   setupAutoRefresh() {

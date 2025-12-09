@@ -65,14 +65,37 @@ export class Table {
     if (typeof value === 'boolean') {
       return value ? 'true' : 'false';
     }
-    return String(value).toLowerCase().replace(/\s+/g, '-');
+    // Handle status enums and other values
+    const stringValue = String(value).toLowerCase();
+    
+    // Map common status values to classes
+    const statusMap: Record<string, string> = {
+      'active': 'success',
+      'inactive': 'warning',
+      'maintenance': 'info',
+      'offline': 'danger',
+      'open': 'warning',
+      'in_progress': 'info',
+      'resolved': 'success',
+      'closed': 'secondary',
+      'low': 'success',
+      'medium': 'warning',
+      'high': 'danger',
+      'critical': 'danger'
+    };
+    
+    return statusMap[stringValue] || stringValue.replace(/[_\s]+/g, '-');
   }
   
   formatBadgeValue(value: any): string {
     if (typeof value === 'boolean') {
       return value ? 'Alert' : 'OK';
     }
-    return String(value);
+    // Format enum values: UNDER_SCORE -> Under Score
+    return String(value)
+      .split('_')
+      .map(word => word.charAt(0) + word.slice(1).toLowerCase())
+      .join(' ');
   }
   
   formatDate(date: string): string {

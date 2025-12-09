@@ -44,7 +44,7 @@
       <app-card *ngIf="viewMode() === 'table'" [loading]="loading()">
         <app-table 
           [columns]="columns" 
-          [data]="sensors()"
+          [data]="sensorData()"
           [clickable]="true"
           [actions]="true"
           (rowClick)="viewDetails($event)">

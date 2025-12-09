@@ -7,7 +7,7 @@
       /* Photo background (city aerial). Override via CSS var --map-bg-url if needed. */
       background:
         linear-gradient(rgba(18, 52, 86, 0.20), rgba(18, 52, 86, 0.20)),
-        url(var(--map-bg-url, 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1600&q=80')) center / cover no-repeat;
+        url('https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1600&q=80') center / cover no-repeat;
     }
     
     .map-svg {
