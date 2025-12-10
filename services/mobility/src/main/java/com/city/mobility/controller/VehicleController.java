@@ -21,10 +21,39 @@ public class VehicleController {
         return vehicleService.getAllVehicles();
     }
 
- @PostMapping
-    public ResponseEntity<VehicleDTO> createVehicle(@RequestBody VehicleDTO dto) {
-    VehicleDTO saved = vehicleService.saveVehicle(dto);
-    return ResponseEntity.ok(saved);
-}
+    @GetMapping("/{id}")
+    public ResponseEntity<VehicleDTO> getById(@PathVariable Long id) {
+        VehicleDTO dto = vehicleService.getVehicleById(id);
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dto);
+    }
 
+    @PostMapping
+    public ResponseEntity<VehicleDTO> createVehicle(@RequestBody VehicleDTO dto) {
+        VehicleDTO saved = vehicleService.saveVehicle(dto);
+        return ResponseEntity.ok(saved);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<VehicleDTO> updateVehicle(@PathVariable Long id, @RequestBody VehicleDTO dto) {
+        VehicleDTO existing = vehicleService.getVehicleById(id);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+        dto.setId(id);
+        VehicleDTO updated = vehicleService.saveVehicle(dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteVehicle(@PathVariable Long id) {
+        VehicleDTO existing = vehicleService.getVehicleById(id);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+        vehicleService.deleteVehicle(id);
+        return ResponseEntity.noContent().build();
+    }
 }

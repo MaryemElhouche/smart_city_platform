@@ -108,6 +108,20 @@ services:
     networks:
       - smart_city_network
 
+  # Smart City Client (Web UI)
+  smart-city-client:
+    build:
+      context: ./smart-city-client
+      dockerfile: Dockerfile
+    container_name: smart-city-client
+    depends_on:
+      - gateway
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - smart_city_network
+
 volumes:
   emergency_db_data:
   mobility_db_data:

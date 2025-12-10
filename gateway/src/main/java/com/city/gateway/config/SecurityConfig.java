@@ -27,10 +27,10 @@ public class SecurityConfig {
                 // GraphQL endpoint - allow without auth for demo purposes
                 .pathMatchers("/graphql/**").permitAll()
                 
-                // Protected microservices endpoints
-                .pathMatchers("/air-quality/**").authenticated()
-                .pathMatchers("/mobility/**").authenticated()
-                .pathMatchers("/emergency/**").authenticated()
+                // Microservices endpoints - permitAll for development
+                .pathMatchers("/air-quality/**").permitAll()
+                .pathMatchers("/mobility/**").permitAll()
+                .pathMatchers("/emergency/**").permitAll()
                 
                 .anyExchange().authenticated()
             )
