@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emergency-grpc-deployment
+  namespace: smartcity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emergency-grpc
+  template:
+    metadata:
+      labels:
+        app: emergency-grpc
+    spec:
+      containers:
+      - name: emergency-grpc
+        image: smart_city_platform-emergency-grpc:latest
+        ports:
+        - containerPort: 9090
+        env:
+          - name: SPRING_DATASOURCE_URL
+            value: "jdbc:postgresql://emergency-postgres-service:5432/emergencydb"
+          - name: SPRING_DATASOURCE_USERNAME
+            value: "emergencyuser"
+          - name: SPRING_DATASOURCE_PASSWORD
+            value: "emergencypass"
+          - name: SPRING_PROFILES_ACTIVE
+            value: "default"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: emergency-grpc-service
+  namespace: smartcity
+spec:
+  selector:
+    app: emergency-grpc
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+  type: ClusterIP
