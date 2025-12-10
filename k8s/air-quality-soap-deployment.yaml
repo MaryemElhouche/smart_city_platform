@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: air-quality-soap-deployment
+  namespace: smartcity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: air-quality-soap
+  template:
+    metadata:
+      labels:
+        app: air-quality-soap
+    spec:
+      containers:
+      - name: air-quality-soap
+        image: smart_city_platform-air-quality-soap:latest
+        ports:
+        - containerPort: 8080
+        env:
+          # URL de connexion MongoDB Atlas (à remplacer par ton URI)
+          - name: SPRING_DATA_MONGODB_URI
+            value: "mongodb+srv://eya:airqualityuser@cluster0.mongodb.net/airqualitydb?retryWrites=true&w=majority"
+          - name: SPRING_PROFILES_ACTIVE
+            value: "default"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: air-quality-soap-service
+  namespace: smartcity
+spec:
+  selector:
+    app: air-quality-soap
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
