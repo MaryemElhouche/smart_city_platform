@@ -1,22 +1,10 @@
-FROM eclipse-temurin:17-jdk-alpine AS build
-
-WORKDIR /app
-
-# Copier les fichiers Maven
-COPY pom.xml .
-COPY src ./src
-
-# Build avec Maven
-RUN apk add --no-cache maven
-RUN mvn clean package -DskipTests
-
-# Image finale
+# Image finale - utilise le JAR pré-compilé
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Copier le JAR généré
-COPY --from=build /app/target/*.jar app.jar
+# Copier le JAR déjà compilé localement
+COPY target/air-quality-soap-0.0.1-SNAPSHOT.jar app.jar
 
 # Exposer le port
 EXPOSE 8083
