@@ -7,7 +7,7 @@ spring:
     name: data-graphql-service
   data:
     mongodb:
-      uri: mongodb+srv://eyaboudidah_db_user:graphqluser@graphqldb.eguz5jr.mongodb.net/
+      uri: mongodb+srv://eyaboudidah_db_user:graphqluser@graphqldb.eguz5jr.mongodb.net/?retryWrites=true&w=majority&readPreference=secondaryPreferred&connectTimeoutMS=10000&serverSelectionTimeoutMS=10000
       database: smart_city
   graphql:
     graphiql:

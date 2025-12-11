@@ -121,6 +121,22 @@ import { RouterModule } from '@angular/router';
               <i class="fas fa-th-large"></i>
               <span>Dashboard</span>
             </a>
+            <a routerLink="/air-quality/zones" routerLinkActive="active">
+              <i class="fas fa-map"></i>
+              <span>Zones</span>
+            </a>
+            <a routerLink="/air-quality/sensors" routerLinkActive="active">
+              <i class="fas fa-broadcast-tower"></i>
+              <span>Sensors</span>
+            </a>
+            <a routerLink="/air-quality/measurements" routerLinkActive="active">
+              <i class="fas fa-chart-line"></i>
+              <span>Measurements</span>
+            </a>
+            <a routerLink="/air-quality/alerts" routerLinkActive="active">
+              <i class="fas fa-bell"></i>
+              <span>Alerts</span>
+            </a>
           </div>
         </div>
 
@@ -135,6 +151,22 @@ import { RouterModule } from '@angular/router';
             <a routerLink="/data/dashboard" routerLinkActive="active">
               <i class="fas fa-th-large"></i>
               <span>Dashboard</span>
+            </a>
+            <a routerLink="/data/city-overview" routerLinkActive="active">
+              <i class="fas fa-city"></i>
+              <span>City Overview</span>
+            </a>
+            <a routerLink="/data/travel" routerLinkActive="active">
+              <i class="fas fa-route"></i>
+              <span>Travel Suggestions</span>
+            </a>
+            <a routerLink="/data/incidents" routerLinkActive="active">
+              <i class="fas fa-clipboard-list"></i>
+              <span>Incidents</span>
+            </a>
+            <a routerLink="/data/explorer" routerLinkActive="active">
+              <i class="fas fa-code"></i>
+              <span>GraphQL Explorer</span>
             </a>
           </div>
         </div>

@@ -4,6 +4,8 @@ import com.city.data.entity.*;
 import com.city.data.repository.CityOverviewRepository;
 import com.city.data.repository.IncidentSummaryRepository;
 import com.city.data.repository.TravelSuggestionsRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
+
+    private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
     @Autowired
     private CityOverviewRepository cityOverviewRepository;
@@ -24,14 +28,23 @@ public class DataInitializer implements CommandLineRunner {
     private IncidentSummaryRepository incidentSummaryRepository;
 
     @Override
-    public void run(String... args) throws Exception {
-        // Check if data already exists to prevent duplication
-        if (cityOverviewRepository.count() > 0) {
-            System.out.println("Data already exists in MongoDB. Skipping initialization.");
-            return;
+    public void run(String... args) {
+        try {
+            // Check if data already exists to prevent duplication
+            if (cityOverviewRepository.count() > 0) {
+                logger.info("Data already exists in MongoDB. Skipping initialization.");
+                return;
+            }
+            
+            logger.info("Initializing sample data in MongoDB Atlas...");
+            initializeData();
+            logger.info("Sample data initialized successfully in MongoDB Atlas!");
+        } catch (Exception e) {
+            logger.warn("Could not initialize sample data in MongoDB: {}. The application will continue without sample data.", e.getMessage());
         }
-        
-        System.out.println("Initializing sample data in MongoDB Atlas...");
+    }
+    
+    private void initializeData() {
 
         // Initialize Zones
         Zone downtownZone = new Zone("zone1", "Downtown", "40.7128,-74.0060");
@@ -112,7 +125,5 @@ public class DataInitializer implements CommandLineRunner {
         );
 
         incidentSummaryRepository.saveAll(Arrays.asList(incident1, incident2, incident3));
-
-        System.out.println("Sample data initialized successfully in MongoDB Atlas!");
     }
 }

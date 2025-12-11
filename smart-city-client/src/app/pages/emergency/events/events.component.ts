@@ -166,6 +166,15 @@ import { ModalComponent } from '../../../components/modal/modal.component';
               </div>
             </div>
           </div>
+          <div class="form-group">
+            <label for="assignedUnit">Assigned Unit</label>
+            <select id="assignedUnit" [(ngModel)]="selectedEvent.assignedUnitId">
+              <option [ngValue]="null">No unit assigned</option>
+              @for (unit of availableUnits; track unit.id) {
+                <option [ngValue]="unit.id">{{ unit.name }} ({{ unit.type }}) - {{ unit.status }}</option>
+              }
+            </select>
+          </div>
         }
       </app-modal>
     </div>
@@ -287,7 +296,7 @@ export class EventsComponent implements OnInit {
     this.emergencyService.getUnits().subscribe({
       next: (data) => {
         this.units = data;
-        this.availableUnits = data.filter(u => u.status === 'AVAILABLE');
+        this.availableUnits = data; // Show all units, user can choose any
       }
     });
   }
