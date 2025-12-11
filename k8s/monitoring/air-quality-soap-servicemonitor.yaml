@@ -1,0 +1,27 @@
+# ServiceMonitor pour que Prometheus (kube-prometheus-stack) scrape les métriques
+# Ce fichier permet à Prometheus de découvrir automatiquement le service air-quality-soap
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: air-quality-soap-monitor
+  namespace: monitoring
+  labels:
+    app: air-quality-soap
+    release: kube-prometheus-stack  # Important: doit correspondre au label du Prometheus Operator
+spec:
+  # Sélectionner les services dans le namespace smartcity
+  namespaceSelector:
+    matchNames:
+      - smartcity
+  # Sélectionner les services avec le label app: air-quality-soap
+  selector:
+    matchLabels:
+      app: air-quality-soap
+  # Configuration du scraping
+  endpoints:
+    - port: http           # Nom du port défini dans le Service
+      path: /actuator/prometheus
+      interval: 15s        # Fréquence de scraping
+      scrapeTimeout: 10s
+      scheme: http
+      honorLabels: true

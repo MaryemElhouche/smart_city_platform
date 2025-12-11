@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: air-quality-soap-deployment
   namespace: smartcity
+  labels:
+    app: air-quality-soap
 spec:
   replicas: 1
   selector:
@@ -12,29 +14,67 @@ spec:
     metadata:
       labels:
         app: air-quality-soap
+      annotations:
+        # Annotations Prometheus pour le scraping automatique
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8083"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       containers:
       - name: air-quality-soap
         image: smart_city_platform-air-quality-soap:latest
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8080
+        - containerPort: 8083
+          name: http
+          protocol: TCP
         env:
-          # URL de connexion MongoDB Atlas (à remplacer par ton URI)
           - name: SPRING_DATA_MONGODB_URI
-            value: "mongodb+srv://eya:airqualityuser@cluster0.mongodb.net/airqualitydb?retryWrites=true&w=majority"
+            value: "mongodb+srv://eya:airqualityuser@cluster0.fvdg5x9.mongodb.net/airqualitydb?retryWrites=true&w=majority"
           - name: SPRING_PROFILES_ACTIVE
             value: "default"
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8083
+          initialDelaySeconds: 120
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8083
+          initialDelaySeconds: 90
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: air-quality-soap-service
   namespace: smartcity
+  labels:
+    app: air-quality-soap
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8083"
+    prometheus.io/path: "/actuator/prometheus"
 spec:
   selector:
     app: air-quality-soap
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
+    - name: http
+      protocol: TCP
+      port: 8083
+      targetPort: 8083
   type: ClusterIP

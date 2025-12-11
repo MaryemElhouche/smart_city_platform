@@ -1,0 +1,21 @@
+# PodMonitor alternatif (si ServiceMonitor ne fonctionne pas)
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: air-quality-soap-podmonitor
+  namespace: monitoring
+  labels:
+    app: air-quality-soap
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - smartcity
+  selector:
+    matchLabels:
+      app: air-quality-soap
+  podMetricsEndpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 15s
+      scrapeTimeout: 10s
